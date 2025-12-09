@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sound Paint - Collab</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/addons/p5.sound.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5.brush@1.1/dist/p5.brush.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #top-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+  </style>
+</head>
+<body class="bg-black">
+  <div id="top-bar" class="bg-gray-900 bg-opacity-90 backdrop-blur-sm text-white px-4 py-2 flex items-center gap-4 text-sm">
+    <div class="flex items-center gap-2">
+      <label for="brush-mode" class="text-gray-400">Brush:</label>
+      <select id="brush-mode" class="px-2 py-1 bg-gray-700 rounded text-white text-xs">
+        <option value="marker" selected>Marker</option>
+        <option value="watercolor">Watercolor</option>
+        <option value="spray">Spray</option>
+        <option value="marker2">Marker 2</option>
+        <option value="pen">Pen</option>
+        <option value="rotring">Rotring</option>
+        <option value="cpencil">Color Pencil</option>
+        <option value="charcoal">Charcoal</option>
+        <option value="2B">2B Pencil</option>
+        <option value="HB">HB Pencil</option>
+        <option value="2H">2H Pencil</option>
+        <option value="jitter">Jitter (Custom)</option>
+      </select>
+    </div>
+
+    <button id="mic-toggle" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded transition">
+      Mic: <span id="mic-status">OFF</span>
+    </button>
+
+    <div class="flex items-center gap-2">
+      <label for="brush-size" class="text-gray-400">Size:</label>
+      <input type="range" id="brush-size" min="5" max="100" step="1" value="30" class="w-20">
+      <span id="brush-size-value" class="text-gray-300 w-8">30</span>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <label for="sensitivity" class="text-gray-400">Sens:</label>
+      <input type="range" id="sensitivity" min="0.5" max="3.0" step="0.1" value="1.0" class="w-16">
+      <span id="sensitivity-value" class="text-gray-300 w-6">1.0</span>
+    </div>
+
+    <button id="clear-btn" class="px-3 py-1 bg-red-700 hover:bg-red-600 rounded transition">
+      Clear
+    </button>
+
+    <div class="ml-auto text-gray-400 text-xs">
+      <span id="online-count">1</span> online
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+  <script src="sketch.js"></script>
+</body>
+</html>
