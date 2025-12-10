@@ -9,6 +9,8 @@ let username = '';
 const GATE_THRESHOLD = 0.02;
 
 let trailStrength = 0;
+let soundAffectsSize = true;
+let lastAudioData = { amplitude: 0, mid: 0, treble: 0, hue: 220, sat: 60, light: 50 };
 let prevMouseX = 0;
 let prevMouseY = 0;
 let lastEmitX = 0;
@@ -24,7 +26,6 @@ function setup() {
   colorMode(RGB, 255, 255, 255, 1);
   background(BG_COLOR[0], BG_COLOR[1], BG_COLOR[2]);
 
-  // p5.brush must be loaded after canvas
   if (typeof brush !== 'undefined') {
     brush.load();
     brush.scaleBrushes(1.5);
@@ -50,8 +51,9 @@ function draw() {
     pop();
   }
 
+  const params = analyzeSound();
+
   if (mouseIsPressed) {
-    const params = analyzeSound();
     const mx = mouseX - width / 2;
     const my = mouseY - height / 2;
     const pmx = prevMouseX - width / 2;
@@ -92,10 +94,8 @@ function analyzeSound() {
   if (!amp || !fft) return defaultParams;
 
   let A = amp.getLevel() * inputGain;
-  A = min(lerp(prevA, A, 0.3), 0.4);
+  A = min(lerp(prevA, A, 0.3), 0.5);
   prevA = A;
-
-  if (A < GATE_THRESHOLD) return defaultParams;
 
   const spectrum = fft.analyze();
   const mid = spectrum[16] || 0;
@@ -105,8 +105,63 @@ function analyzeSound() {
   const sat = map(mid, 0, 255, 60, 100, true);
   const light = map(treble, 0, 255, 50, 85, true);
 
+  lastAudioData = {
+    amplitude: A,
+    mid: mid,
+    treble: treble,
+    hue: hue,
+    sat: sat,
+    light: light
+  };
+
+  updateAudioPreview(A, mid, treble, hue, sat, light);
+
+  if (A < GATE_THRESHOLD) return defaultParams;
+
+  let dynamicSize = brushSize;
+  if (soundAffectsSize) {
+    dynamicSize = map(A, GATE_THRESHOLD, 0.4, brushSize * 0.5, brushSize * 2.5, true);
+  }
+
   const rgb = hslToRgb(hue / 360, sat / 100, light / 100);
-  return { size: brushSize, r: rgb.r, g: rgb.g, b: rgb.b };
+  return { size: dynamicSize, r: rgb.r, g: rgb.g, b: rgb.b };
+}
+
+function updateAudioPreview(amplitude, mid, treble, hue, sat, light) {
+  const volumeBar = document.getElementById('volume-bar');
+  const volumeValue = document.getElementById('volume-value');
+  if (volumeBar && volumeValue) {
+    const volumePercent = Math.min(amplitude / 0.4 * 100, 100);
+    volumeBar.style.width = volumePercent + '%';
+    volumeBar.style.backgroundColor = amplitude > GATE_THRESHOLD ? '#22c55e' : '#6b7280';
+    volumeValue.textContent = Math.round(volumePercent) + '%';
+  }
+
+  const midBar = document.getElementById('mid-bar');
+  const midValue = document.getElementById('mid-value');
+  if (midBar && midValue) {
+    midBar.style.width = (mid / 255 * 100) + '%';
+    midValue.textContent = Math.round(mid);
+  }
+
+  const trebleBar = document.getElementById('treble-bar');
+  const trebleValue = document.getElementById('treble-value');
+  if (trebleBar && trebleValue) {
+    trebleBar.style.width = (treble / 255 * 100) + '%';
+    trebleValue.textContent = Math.round(treble);
+  }
+
+  const brushPreview = document.getElementById('brush-preview');
+  if (brushPreview) {
+    const rgb = hslToRgb(hue / 360, sat / 100, light / 100);
+    brushPreview.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    let previewSize = 32;
+    if (soundAffectsSize && amplitude > GATE_THRESHOLD) {
+      previewSize = map(amplitude, GATE_THRESHOLD, 0.4, 24, 48, true);
+    }
+    brushPreview.style.width = previewSize + 'px';
+    brushPreview.style.height = previewSize + 'px';
+  }
 }
 
 function hslToRgb(h, s, l) {

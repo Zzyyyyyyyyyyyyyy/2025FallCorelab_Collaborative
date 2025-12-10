@@ -56,6 +56,36 @@
       Clear
     </button>
 
+    <div id="audio-preview" class="flex items-center gap-3 px-3 py-1 bg-gray-800 rounded border border-gray-600">
+      <div class="flex items-center gap-2">
+        <span class="text-gray-400 text-xs">Preview:</span>
+        <div id="brush-preview" class="w-8 h-8 rounded-full border-2 border-gray-500" style="background: rgb(100, 180, 220);"></div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-1">
+          <span class="text-gray-500 text-xs w-10">Vol:</span>
+          <div class="w-24 h-2 bg-gray-700 rounded overflow-hidden">
+            <div id="volume-bar" class="h-full bg-green-500 transition-all duration-75" style="width: 0%"></div>
+          </div>
+          <span id="volume-value" class="text-gray-400 text-xs w-8">0%</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-gray-500 text-xs w-10">Mid:</span>
+          <div class="w-24 h-2 bg-gray-700 rounded overflow-hidden">
+            <div id="mid-bar" class="h-full bg-blue-500 transition-all duration-75" style="width: 0%"></div>
+          </div>
+          <span id="mid-value" class="text-gray-400 text-xs w-8">0</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-gray-500 text-xs w-10">High:</span>
+          <div class="w-24 h-2 bg-gray-700 rounded overflow-hidden">
+            <div id="treble-bar" class="h-full bg-purple-500 transition-all duration-75" style="width: 0%"></div>
+          </div>
+          <span id="treble-value" class="text-gray-400 text-xs w-8">0</span>
+        </div>
+      </div>
+    </div>
+
     <div class="ml-auto text-gray-400 text-xs">
       <span id="online-count">1</span> online
     </div>
